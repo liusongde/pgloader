@@ -1,11 +1,10 @@
-
 name: Build pgloader on aarch64
 
 on:
   push:
-    branches: [ main, master , liusongde-patch-1]
+    branches: [main, master, liusongde-patch-1]
   pull_request:
-    branches: [ main, master, liusongde-patch-1 ]
+    branches: [main, master, liusongde-patch-1]
 
 jobs:
   build-pgloader-aarch64:
@@ -15,36 +14,39 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.ref }}  # 动态获取当前分支
 
-      - name: Install build dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git build-essential libssl-dev libpq-dev libsqlite3-dev libcurl4-openssl-dev libxml2-dev libxslt1-dev libyaml-dev libglib2.0-dev libffi-dev
-
-      - name: Install SBCL (Steel Bank Common Lisp)
-        run: |
-          sudo apt-get install -y sbcl
-
-      - name: Clone pgloader source
-        run: |
-          git clone https://github.com/dimitri/pgloader.git
-          cd pgloader
-          git checkout v3.6.10  # 使用稳定版本，避免主分支变动
+          sudo apt-get install -y \
+            git \
+            build-essential \
+            libssl-dev \
+            libpq-dev \
+            libsqlite3-dev \
+            libcurl4-openssl-dev \
+            libxml2-dev \
+            libxslt1-dev \
+            libyaml-dev \
+            libglib2.0-dev \
+            libffi-dev \
+            sbcl  # 合并SBCL安装到依赖步骤
 
       - name: Build pgloader
-        working-directory: ./pgloader
         run: |
+          # 使用当前仓库代码，无需额外克隆
+          cd ${{ github.workspace }}
           make
 
       - name: Verify binary
-        working-directory: ./pgloader
         run: |
           ls -la pgloader
           ./pgloader --version
 
-      - name: Upload pgloader binary as artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: pgloader-aarch64-binary
-          path: pgloader/pgloader
+          path: ./pgloader
           retention-days: 14
