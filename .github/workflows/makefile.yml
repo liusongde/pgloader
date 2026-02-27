@@ -3,9 +3,9 @@ name: Build pgloader on aarch64
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master , liusongde-patch-1]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, liusongde-patch-1 ]
 
 jobs:
   build-pgloader-aarch64:
@@ -29,7 +29,7 @@ jobs:
         run: |
           git clone https://github.com/dimitri/pgloader.git
           cd pgloader
-          git checkout v3.6.2  # 使用稳定版本，避免主分支变动
+          git checkout v3.6.10  # 使用稳定版本，避免主分支变动
 
       - name: Build pgloader
         working-directory: ./pgloader
